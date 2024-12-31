@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Meryll Mercadier" />
+
+<meta name="date" content="2024-12-30" />
+
+<title>Movie Recommendation System</title>
+
+<script src="libs/header-attrs-2.28/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Movie Recommendation System</h1>
+<h3 class="subtitle">HarvardX - Data Science : Capstone</h3>
+<h4 class="author">Meryll Mercadier</h4>
+<h4 class="date">2024-12-30</h4>
+
+</div>
+
+
+<div id="preface" class="section level3">
+<h3>Preface</h3>
+<p>This project is an assessment, part of the online course <a
+href="https://www.edx.org/learn/data-science/harvard-university-data-science-capstone">HarvardX:
+Data Science: Capstone</a> from Harvard University on Edx
+platform.<br />
+The HarvardX: Data Science: Capstone” is the last part of a global <a
+href="https://pll.harvard.edu/series/professional-certificate-data-science">Professional
+Certificate Program in Data Science</a>.<br />
+The purpose of this project is to autonomously put into practice all the
+knowledge learned during the past courses.<br />
+The following code will be highly commented in order to facilitate its
+readability and evaluation. <br />
+<font color="grey"><em>As English is not my native language, part of the
+comments meaning can be lost due to a wrong translation.</em><br />
+<em>Please take it in consideration by evaluating this
+project.</em></font></p>
+</div>
+<div id="summary" class="section level3">
+<h3>Summary</h3>
+<ul>
+<li>
+<a href="#introduction">Introduction</a>
+</li>
+<li>
+<a href="#installing-all-packages-needed">Installing all packages
+needed</a>
+</li>
+<li>
+<a href="#data-collection-and-preparation">Data collection and
+preparation</a>
+</li>
+<li>
+<details>
+<summary>
+<a href="#data-analysis">Data analysis</a>
+</summary>
+<pre><code>  Analyzing the &quot;userId&quot; parameter
+  Analyzing the &quot;movieId&quot; parameter
+  Analyzing the &quot;rating&quot; parameter
+  Analyzing the &quot;timestamp&quot; parameter
+  Analyzing the &quot;title&quot; parameter
+  Analyzing the &quot;movie_year&quot; parameter
+  Analyzing the &quot;rating_delay&quot; parameter
+  Analyzing the &quot;genres&quot; parameter
+  Analyzing our database sparsity ratio
+  Data analysis conclusion</code></pre>
+</details>
+</li>
+<li>
+<details>
+<summary>
+<a href="#model-buildging">Model buildging</a>
+</summary>
+<pre><code>  Model 1 : Naive RMSE
+  Model 2 : Adding the movie effect
+  Model 3 : Regularizing the movie effect
+  Model 4 : Adding user effect
+  Model 5 : Regularizing the user effect
+  Model 6 : Add the movie&#39;s year effect
+  Model 7 : Regularizing the movie year effect
+  Model 8 : Add the rating delay effect
+  Model 9 : Regularizing the rating delay effect
+  Model 10 : adding the genres effect
+  Model 11 : Regularizing the genres effect
+  Model 12 : Cross validation on the final model</code></pre>
+</details>
+</li>
+<li>
+<a href="#model-evaluation">Model evaluation</a>
+</li>
+<li>
+<a href="#conclusion">Conclusion</a>
+</li>
+</ul>
+</div>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>In this project, the goal is to create a movie recommendation
+algorithm.<br />
+The algorithm will be tested on the “final_holdout_test” set and
+evaluated using the RMSE calculation method.<br />
+The target is an RMSE &lt; 0.86490.<br />
+The data contains ratings from users of the online movie recommender
+service “MovieLens,” and it is made available by GroupLens <a
+href="https://grouplens.org/datasets/movielens/10m/">here</a>.<br />
+You can find more information about the dataset <a
+href="https://files.grouplens.org/datasets/movielens/ml-10m-README.html">here</a>.<br />
+Citation: F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens
+Datasets: History and Context. ACM Transactions on Interactive
+Intelligent Systems (TiiS) 5, 4, Article 19 (December 2015), 19 pages.
+<a href="http://dx.doi.org/10.1145/2827872">DOI</a>.<br />
+</p>
+</div>
+<div id="installing-all-packages-needed" class="section level3">
+<h3>Installing all packages needed</h3>
+<pre class="r"><code>if(!require(tidyverse)) install.packages(&quot;tidyverse&quot;, repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
+<pre><code>## Loading required package: tidyverse</code></pre>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.2     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(tidyverse)
+
+if(!require(caret)) install.packages(&quot;caret&quot;, repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
+<pre><code>## Loading required package: caret
+## Loading required package: lattice
+## 
+## Attaching package: &#39;caret&#39;
+## 
+## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     lift</code></pre>
+<pre class="r"><code>library(caret)
+
+if(!require(lubridate)) install.packages(&quot;lubridate&quot;, repos = &quot;http://cran.us.r-project.org&quot;)
+
+library(lubridate)
+
+if(!require(tidytext)) install.packages(&quot;tidytext&quot;, repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
+<pre><code>## Loading required package: tidytext</code></pre>
+<pre class="r"><code>library(tidytext)
+
+if(!require(textdata)) install.packages(&quot;textdata&quot;, repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
+<pre><code>## Loading required package: textdata</code></pre>
+<pre class="r"><code>library(textdata)</code></pre>
+</div>
+<div id="data-collection-and-preparation" class="section level3">
+<h3>Data collection and preparation</h3>
+<p><font color="grey"><em>The code below for data collection and
+preparation is provided in the online course <a
+href="https://www.edx.org/learn/data-science/harvard-university-data-science-capstone">HarvardX:
+Data Science: Capstone</a></em></font> </p>
+<pre class="r"><code>options(timeout = 120)
+
+dl &lt;- &quot;ml-10M100K.zip&quot;
+if(!file.exists(dl))
+  download.file(&quot;https://files.grouplens.org/datasets/movielens/ml-10m.zip&quot;, dl)
+
+ratings_file &lt;- &quot;ml-10M100K/ratings.dat&quot;
+if(!file.exists(ratings_file))
+  unzip(dl, ratings_file)
+
+movies_file &lt;- &quot;ml-10M100K/movies.dat&quot;
+if(!file.exists(movies_file))
+  unzip(dl, movies_file)
+
+ratings &lt;- as.data.frame(str_split(read_lines(ratings_file), fixed(&quot;::&quot;), simplify = TRUE),
+                         stringsAsFactors = FALSE)
+colnames(ratings) &lt;- c(&quot;userId&quot;, &quot;movieId&quot;, &quot;rating&quot;, &quot;timestamp&quot;)
+ratings &lt;- ratings %&gt;%
+  mutate(userId = as.integer(userId),
+         movieId = as.integer(movieId),
+         rating = as.numeric(rating),
+         timestamp = as.integer(timestamp))
+
+movies &lt;- as.data.frame(str_split(read_lines(movies_file), fixed(&quot;::&quot;), simplify = TRUE),
+                        stringsAsFactors = FALSE)
+colnames(movies) &lt;- c(&quot;movieId&quot;, &quot;title&quot;, &quot;genres&quot;)
+movies &lt;- movies %&gt;%
+  mutate(movieId = as.integer(movieId))
+
+movielens &lt;- left_join(ratings, movies, by = &quot;movieId&quot;)
+
+# Final hold-out test set will be 10% of MovieLens data
+set.seed(1) 
+test_index &lt;- createDataPartition(y = movielens$rating, times = 1, p = 0.1, list = FALSE)
+edx &lt;- movielens[-test_index,]
+temp &lt;- movielens[test_index,]
+
+# Make sure userId and movieId in final hold-out test set are also in edx set
+final_holdout_test &lt;- temp %&gt;% 
+  semi_join(edx, by = &quot;movieId&quot;) %&gt;%
+  semi_join(edx, by = &quot;userId&quot;)
+
+# Add rows removed from final hold-out test set back into edx set
+removed &lt;- anti_join(temp, final_holdout_test)</code></pre>
+<pre><code>## Joining with `by = join_by(userId, movieId, rating, timestamp, title, genres)`</code></pre>
+<pre class="r"><code>edx &lt;- rbind(edx, removed)
+
+rm(dl, ratings, movies, test_index, temp, movielens, removed)</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="data-analysis" class="section level3">
+<h3>Data analysis</h3>
+<div id="general-understanding-of-the-data" class="section level4">
+<h4>General understanding of the data</h4>
+<pre class="r"><code>str(edx)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    9000061 obs. of  6 variables:
+##  $ userId   : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ movieId  : int  122 185 231 292 316 329 355 356 362 364 ...
+##  $ rating   : num  5 5 5 5 5 5 5 5 5 5 ...
+##  $ timestamp: int  838985046 838983525 838983392 838983421 838983392 838983392 838984474 838983653 838984885 838983707 ...
+##  $ title    : chr  &quot;Boomerang (1992)&quot; &quot;Net, The (1995)&quot; &quot;Dumb &amp; Dumber (1994)&quot; &quot;Outbreak (1995)&quot; ...
+##  $ genres   : chr  &quot;Comedy|Romance&quot; &quot;Action|Crime|Thriller&quot; &quot;Comedy&quot; &quot;Action|Drama|Sci-Fi|Thriller&quot; ...</code></pre>
+<pre class="r"><code>summary(edx)</code></pre>
+<pre><code>##      userId         movieId          rating        timestamp        
+##  Min.   :    1   Min.   :    1   Min.   :0.500   Min.   :7.897e+08  
+##  1st Qu.:18122   1st Qu.:  648   1st Qu.:3.000   1st Qu.:9.468e+08  
+##  Median :35743   Median : 1834   Median :4.000   Median :1.035e+09  
+##  Mean   :35869   Mean   : 4120   Mean   :3.512   Mean   :1.033e+09  
+##  3rd Qu.:53602   3rd Qu.: 3624   3rd Qu.:4.000   3rd Qu.:1.127e+09  
+##  Max.   :71567   Max.   :65133   Max.   :5.000   Max.   :1.231e+09  
+##     title              genres         
+##  Length:9000061     Length:9000061    
+##  Class :character   Class :character  
+##  Mode  :character   Mode  :character  
+##                                       
+##                                       
+## </code></pre>
+<pre class="r"><code>class(edx) #&quot;data.frame&quot;.</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<pre class="r"><code>length(unique(edx$userId)) #there are 69878 unique raters.</code></pre>
+<pre><code>## [1] 69878</code></pre>
+<pre class="r"><code>length(unique(edx$movieId)) #there are 10677 unique movies.</code></pre>
+<pre><code>## [1] 10677</code></pre>
+<pre class="r"><code>length(unique(edx$genres)) #there are 797 unique genres combinations.</code></pre>
+<pre><code>## [1] 797</code></pre>
+<p><br />
+We will now explore the data following the order of the parameters in
+the dataframe: “userId”, “movieId”, “rating”, “timestamp”, “title”,
+“genres”.<br />
+</p>
+<font color="grey"><em>Each line of code below includes:</em><br />
+
+<ul>
+<li>
+<em>A question above, which we try to answer with the line of code.</em>
+</li>
+<li>
+<em>A comment to the right of the code explaining what the code
+does.</em>
+</li>
+<li>
+<em>A comment below interpreting the output or the visual generated by
+the code.</em>
+</li>
+</ul>
+<p></font>  <br />
+</p>
+</div>
+<div id="analyzing-userid-parameter" class="section level4">
+<h4>Analyzing “userId” parameter</h4>
+<div
+id="does-the-number-of-ratings-per-user-correlate-with-the-mean-rating"
+class="section level5">
+<h5>Does the number of ratings per user correlate with the mean
+rating?</h5>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n_rates_per_user=n(),mean_rating=mean(rating))%&gt;%
+  arrange(-desc(n_rates_per_user))%&gt;%ggplot(aes(n_rates_per_user,mean_rating))+geom_point(alpha=0.4)+
+  geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  geom_text(x=5000,y=mean(edx$rating)+0.1,label=&quot;global average rating&quot;,color=&quot;red&quot;)+
+  labs(title=&quot;Relationship between number of ratings per user and their mean rating&quot;,
+       x=&quot;Number of ratings per user&quot;,
+       y=&quot;Mean rating per user&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-4-1.png" width="672" /><br />
+It seems there is a correlation between the number of ratings per user
+and their mean rating.<br />
+The more movies a user rates, the higher their average rating tends to
+be.<br />
+<br />
+</p>
+</div>
+<div
+id="can-we-better-understand-if-the-number-of-ratings-per-user-correlates-with-the-variability-of-ratings"
+class="section level5">
+<h5>Can we better understand if the number of ratings per user
+correlates with the variability of ratings?<br />
+</h5>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=round(n(),digits=-3),mean_rating=mean(rating))%&gt;%
+  arrange(-desc(n))%&gt;%mutate(n=as.factor(n))%&gt;%
+  ggplot(aes(n,mean_rating,color=n))+geom_boxplot()+
+  labs(title=&quot;Boxplot of the number of ratings per user and their mean rating&quot;,
+       x=&quot;Number of ratings per user (grouped by 1,000)&quot;,
+       y=&quot;mean rating per user&quot;)+theme_minimal()</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-5-1.png" width="672" /><br />
+Contrary to the conclusion from the previous plot, we now see that there
+isn’t a strong correlation between the mean rating and the number of
+ratings per user.<br />
+However, we can conclude that there is a correlation between the number
+of ratings per user and the variability of their mean ratings.<br />
+<br />
+</p>
+</div>
+<div id="can-we-better-visualize-the-variability-within-each-group"
+class="section level5">
+<h5>Can we better visualize the variability within each group?<br />
+</h5>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=round(n(),digits=-3),,mean_rating=mean(rating))%&gt;%
+  arrange(desc(n))%&gt;%mutate(n=as.factor(n))%&gt;%group_by(n)%&gt;%
+  mutate(spread=max(mean_rating)-min(mean_rating))%&gt;%
+  ggplot(aes(n,spread,group=1))+geom_line(color=&quot;darkgrey&quot;)+geom_point(color=&quot;darkgrey&quot;) +
+  labs(title=&quot;Variability of mean ratings by user group&quot;,
+       x=&quot;Number of ratings per user (grouped by 1,000)&quot;,
+       y=&quot;Spread of mean ratings&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-6-1.png" width="672" /><br />
+The plot highlights how the variability of mean ratings changes with the
+number of ratings per user.<br />
+<br />
+</p>
+</div>
+<div id="how-many-ratings-do-people-usually-give"
+class="section level5">
+<h5>How many ratings do people usually give?<br />
+</h5>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%qplot()+labs(title = &quot;Distribution of number of ratings per user&quot;, x = &quot;Number of ratings per user&quot;, y = &quot;Frequency&quot;)</code></pre>
+<pre><code>## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%qplot(xlim=c(0, 500))+labs(title = &quot;Distribution of ratings for users with fewer than 500 ratings&quot;,x = &quot;Number of ratings per user&quot;, y = &quot;Frequency&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>## Warning: Removed 2994 rows containing non-finite outside the scale range
+## (`stat_bin()`).</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values or values outside the scale range
+## (`geom_bar()`).</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%ecdf()%&gt;%plot(xlim=c(0, 10000), main = &quot;Cumulative proportion of the number of ratings per user&quot;,xlab = &quot;Number of ratings per user&quot;, ylab = &quot;Cumulative proportion&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%quantile(,probs=.51) # Finding the 51th percentile of ratings per user.</code></pre>
+<pre><code>## 51% 
+##  64</code></pre>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%quantile(,probs=.81) # Finding the 81th percentile of ratings per user.</code></pre>
+<pre><code>##    81% 
+## 183.37</code></pre>
+<p><br />
+We see that most of the users gave only few ratings.<br />
+More than half of the users have given fewer than 64 ratings, and 80% of
+the users gave fewer than 183 ratings.<br />
+<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-movieid-parameter" class="section level4">
+<h4>Analyzing “movieId” parameter</h4>
+<div
+id="does-the-number-of-ratings-per-movie-correlate-with-the-mean-rating"
+class="section level5">
+<h5>Does the number of ratings per movie correlate with the mean
+rating?</h5>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=n(),mean_rating=mean(rating))%&gt;%arrange(-desc(n))%&gt;%
+  ggplot(aes(n,mean_rating))+geom_point(alpha=0.4)+ geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  geom_text(x=25000,y=mean(edx$rating)+0.1,label=&quot;global average rating&quot;,color=&quot;red&quot;)+
+  labs(title=&quot;Relationship between number of ratings per movie and their mean rating&quot;,
+       x=&quot;Number of ratings per movie&quot;,
+       y=&quot;Mean rating per movie&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-8-1.png" width="672" /><br />
+We observe a correlation between the number of ratings per movie and
+their mean ratings.<br />
+Generally, movies with more ratings tend to have higher average
+ratings.<br />
+<br />
+</p>
+</div>
+<div
+id="can-we-better-understand-if-the-number-of-ratings-per-movie-correlates-with-the-variability-of-ratings"
+class="section level5">
+<h5>Can we better understand if the number of ratings per movie
+correlates with the variability of ratings?</h5>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=round(n(),digits=-4),mean_rating=mean(rating))%&gt;%
+  arrange(-desc(n))%&gt;%mutate(n=as.factor(n))%&gt;%
+  ggplot(aes(n,mean_rating,color=n))+geom_boxplot()+
+  labs(title = &quot;Boxplot of the number of ratings per movie and their mean rating&quot;,
+       x=&quot;Number of ratings per movie (grouped by 10,000)&quot;,
+       y=&quot;Mean rating per movie&quot;)+theme_minimal()</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-9-1.png" width="672" /><br />
+These boxplots show that movies with more ratings tend to have higher
+average ratings.<br />
+Movies with fewer ratings show higher variability in their mean
+ratings.<br />
+As the number of ratings increases, the variability in ratings
+decreases.<br />
+<br />
+</p>
+</div>
+<div id="can-we-better-visualize-the-variability-within-each-group-1"
+class="section level5">
+<h5>Can we better visualize the variability within each group?</h5>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=round(n(),digits=-4),,mean_rating=mean(rating))%&gt;%
+  arrange(desc(n))%&gt;%mutate(n=as.factor(n))%&gt;%group_by(n)%&gt;%mutate(spread=max(mean_rating)-min(mean_rating))%&gt;%
+  ggplot(aes(n,spread,group=1))+geom_line(color=&quot;darkgrey&quot;)+geom_point(color=&quot;darkgrey&quot;)+
+  labs(title = &quot;Variability of mean ratings by movie group&quot;,
+       x=&quot;Number of ratings per movie (grouped by 10,000)&quot;,
+       y=&quot;Spread of mean ratings&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-10-1.png" width="672" /><br />
+The plot highlights how the variability of mean ratings changes with the
+number of ratings per movie.<br />
+<br />
+</p>
+</div>
+<div id="how-many-rates-do-movies-have" class="section level5">
+<h5>How many rates do movies have?</h5>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%qplot()+labs(title = &quot;Distribution of number of ratings per movie&quot;, x = &quot;Number of ratings per movie&quot;, y = &quot;Frequency&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%qplot(xlim=c(0, 3000))+labs(title = &quot;Distribution of ratings for movie with fewer than 3,000 ratings&quot;,x = &quot;Number of ratings per movie&quot;, y = &quot;Frequency&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>## Warning: Removed 768 rows containing non-finite outside the scale range
+## (`stat_bin()`).</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values or values outside the scale range
+## (`geom_bar()`).</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%ecdf()%&gt;%plot(xlim=c(0, 8000), main = &quot;Cumulative proportion of the number of ratings per movie&quot;,xlab = &quot;Number of ratings per movie&quot;, ylab = &quot;Cumulative proportion&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-11-3.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%quantile(,probs=.51) # Finding the 51th percentile of ratings per movie</code></pre>
+<pre><code>## 51% 
+## 128</code></pre>
+<pre class="r"><code>edx%&gt;%group_by(movieId)%&gt;%summarize(n=n())%&gt;%pull(n)%&gt;%quantile(,probs=.81) # Finding the 81th percentile of ratings per movie.</code></pre>
+<pre><code>## 81% 
+## 905</code></pre>
+<p><br />
+We see that most of the movies have only few ratings.<br />
+More than half of the movies have fewer than 128 ratings, and 80% of the
+users have fewer than 903 ratings.<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-rating-parameter" class="section level4">
+<h4>Analyzing “rating” parameter<br />
+</h4>
+<div id="whats-the-distribution-of-ratings" class="section level5">
+<h5>What’s the distribution of ratings?<br />
+</h5>
+<pre class="r"><code>qplot(edx$rating, bins=20)+
+  labs(title = &quot;Distribution of movie ratings&quot;,
+       x = &quot;Ratings&quot;,
+       y = &quot;Frequency&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-12-1.png" width="672" /><br />
+We notice that whole-star ratings are more frequent than half-star
+ratings.<br />
+It seems there are two distinct distributions: one for whole-star
+ratings and another for half-star ratings.<br />
+<br />
+</p>
+</div>
+<div
+id="can-we-conclude-that-there-are-two-types-of-raters-whole-star-raters-and-half-star-raters"
+class="section level5">
+<h5>Can we conclude that there are two types of raters: whole-star
+raters and half-star raters?</h5>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(dot=round(mean(str_detect(rating,&quot;\\d\\.\\d&quot;)),digit=1)*100)%&gt;%
+  group_by(dot)%&gt;%summarize(n=n(),&quot;part&quot;=(n/length(unique(edx$userId)))*100)%&gt;%
+  ggplot(aes(x=dot,y=part))+geom_bar(stat = &quot;identity&quot;)+
+  labs(title=&quot;Percentage of users by proportion of half-star ratings&quot;,
+       x=&quot;Percentage of half-star ratings (%)&quot;,
+       y=&quot;Percentage of users (%)&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-13-1.png" width="672" /><br />
+This bar plot shows that most users don’t use half-star ratings at all. 
+Among users who do use half-star ratings, the majority still tend to
+favor whole-star ratings.<br />
+<br />
+</p>
+</div>
+<div
+id="whats-the-percentage-of-users-who-use-half-star-ratings-more-than-50-of-the-time"
+class="section level5">
+<h5>What’s the percentage of users who use half-star ratings more than
+50% of the time?</h5>
+<pre class="r"><code>edx%&gt;%group_by(userId)%&gt;%summarize(dot=round(mean(str_detect(rating,&quot;\\d\\.\\d&quot;)),digit=1)*100)%&gt;%
+  group_by(dot)%&gt;%summarize(n=n(),&quot;part&quot;=(n/length(unique(edx$userId)))*100)%&gt;%filter(dot&gt;50)%&gt;%summarize(sum(part))%&gt;%pull()</code></pre>
+<pre><code>## [1] 2.335499</code></pre>
+<p><br />
+We observe that only a small fraction of users (2.3%) use half-star
+ratings more than 50% of the time.<br />
+This shows us that there aren’t really two distinct types of raters
+(whole-star &amp; half-star raters).<br />
+<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-timestamp-parameter" class="section level4">
+<h4>Analyzing “timestamp” parameter</h4>
+<div id="whats-the-distribution-of-ratings-across-years"
+class="section level5">
+<h5>What’s the distribution of ratings across years?</h5>
+<p>As stated in the GroupLens dataset <a
+href="https://files.grouplens.org/datasets/movielens/ml-10m-README.html">README.txt</a>:<br />
+Timestamps represent seconds since midnight Coordinated Universal Time
+(UTC) of January 1, 1970.”<br />
+</p>
+<pre class="r"><code>qplot(year(as.POSIXct(edx$timestamp,origin,tz=&quot;UTC&quot;)))+
+  labs(title=&quot;Distribution of ratings over the years&quot;,
+       x=&quot;Year&quot;,
+       y=&quot;Number of ratings&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-15-1.png" width="672" /><br />
+The distribution doesn’t provide much additional insight about the
+data.<br />
+The distribution doesn’t appear to follow a normal pattern.<br />
+This irregularity might be due to the fact that this dataset is a random
+sample from a larger dataset.<br />
+<br />
+</p>
+</div>
+<div id="whats-the-distribution-of-ratings-across-hours"
+class="section level5">
+<h5>What’s the distribution of ratings across hours?</h5>
+<pre class="r"><code>qplot(hour(as.POSIXct(edx$timestamp,origin,tz=&quot;UTC&quot;)))+
+  labs(title=&quot;Distribution of ratings across hours (UTC)&quot;,
+       x=&quot;Hour of the day (UTC)&quot;,
+       y=&quot;Number of ratings&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-16-1.png" width="672" /><br />
+The distribution of ratings across hours appears normal.<br />
+However, there’s a secondary smaller bump between 2 AM and 4 AM
+(UTC).<br />
+This could suggest different geographic profiles or time zones
+influencing rating behavior.<br />
+Despite this observation, the data isn’t informative enough for further
+analysis.<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-title-parameter" class="section level4">
+<h4>Analyzing “title” parameter</h4>
+<div
+id="is-the-title-length-number-of-characters-correlated-with-the-average-rating"
+class="section level5">
+<h5>Is the title length (number of characters) correlated with the
+average rating?</h5>
+<pre class="r"><code>edx%&gt;%mutate(title_size=nchar(title))%&gt;%group_by(movieId,title)%&gt;%
+  summarize(title_size=mean(title_size),mean_rate=mean(rating))%&gt;%
+  ungroup()%&gt;%select(title_size,mean_rate)%&gt;%ggplot(aes(title_size,mean_rate))+
+  geom_point(alpha=0.4)+ geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  geom_text(x=125,y=mean(edx$rating)+0.2,label=&quot;global average rating&quot;,color=&quot;red&quot;)+
+  labs(title=&quot;Relationship between title Length and average rating&quot;,
+       x=&quot;Title length (number of characters)&quot;,
+       y=&quot;Mean rating&quot;)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;movieId&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-17-1.png" width="672" /><br />
+This plot does not allow us to make any clear conclusion.<br />
+There is significant variability in average ratings across all title
+lengths.<br />
+<br />
+</p>
+</div>
+<div
+id="can-we-better-understand-if-title-length-is-correlated-with-average-rating"
+class="section level5">
+<h5>Can we better understand if title length is correlated with average
+rating?</h5>
+<pre class="r"><code>edx%&gt;%mutate(title_size=nchar(title))%&gt;%group_by(movieId,title)%&gt;%
+  summarize(title_size=round(mean(title_size),digit=-1),mean_rate=mean(rating))%&gt;%
+  ungroup()%&gt;%mutate(title_size=as.factor(title_size))%&gt;%select(title_size,mean_rate)%&gt;%
+  ggplot(aes(title_size,mean_rate,color=title_size))+geom_boxplot()+
+  labs(title=&quot;Boxplot of the mean ratings across title length groups&quot;,
+    x=&quot;Title length (rounded to nearest 10 characters)&quot;,
+    y=&quot;Mean rating&quot;)+theme_minimal()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;movieId&#39;. You can override using the
+## `.groups` argument.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-18-1.png" width="672" /><br />
+This result confirms our previous conclusion:<br />
+There is significant variability in average ratings across all title
+length groups.<br />
+We can’t see clear correlation between title length and average
+rating.<br />
+<br />
+</p>
+</div>
+<div
+id="does-the-sentiment-or-emotion-of-words-in-the-title-correlate-with-the-average-rating"
+class="section level5">
+<h5>Does the sentiment or emotion of words in the title correlate with
+the average rating?</h5>
+<pre class="r"><code>title_words&lt;-edx%&gt;%select(movieId,title)%&gt;%group_by(movieId)%&gt;%unnest_tokens(word,title)%&gt;%
+  filter(!word %in% stop_words$word &amp; !str_detect(word, &quot;^\\d+$&quot;)) # Separating each word in movie titles, removing numbers and common neutral words 
+sentiments_bing&lt;-get_sentiments(&quot;bing&quot;) #Loading the Bing sentiment lexicon (dataframe with words and their sentiments (&quot;positive&quot; or &quot;negative&quot;))
+title_bing&lt;-title_words%&gt;%inner_join(x=title_words,y=sentiments_bing,by=&quot;word&quot;)%&gt;% 
+  aggregate(model.matrix(~sentiment+0)~movieId,,FUN=mean)%&gt;%
+mutate(sentiment=ifelse(sentimentnegative&gt;0.5,&quot;NEGATIVE&quot;,ifelse(sentimentnegative==0.5,&quot;NEUTRAL&quot;,&quot;POSITIVE&quot;)))%&gt;%
+  select(movieId,sentiment) # Assigning sentiments to words in titles and aggregating sentiment per movie (&quot;negative&quot;,&quot;neutral&quot;,&quot;positive&quot;)
+edx%&gt;%group_by(movieId)%&gt;%summarise(mean_rating=mean(rating))%&gt;%inner_join(,y=title_bing,by=&quot;movieId&quot;)%&gt;%
+  ggplot(aes(sentiment,mean_rating,color=sentiment))+geom_boxplot()+
+  labs(title=&quot;Correlation between title sentiment and average rating&quot;,
+       x=&quot;Sentiment of title words&quot;,
+       y=&quot;Average rating&quot;)+theme_minimal()</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-19-1.png" width="672" /><br />
+There is significant variability in average ratings across sentiments
+groups.<br />
+We can’t see clear correlation between title sentiment and average
+rating.<br />
+A different sentiment analysis method (e.g., “afinn”, “loughran”, “nrc”)
+might perhaps gives us more interesting results.<br />
+<br />
+We can see that in the title there are the year of movies
+realizations.<br />
+Let’s extract this information to see if it provides us additional
+insights.<br />
+<br />
+</p>
+<pre class="r"><code>year_movie&lt;-str_extract_all(edx$title, &quot;\\([0-9]{4}\\)$&quot;,simplify=TRUE)
+year_movie&lt;-as.numeric(str_extract_all(year_movie, &quot;[0-9]{4}&quot;,simplify=TRUE))
+edx&lt;-edx%&gt;%mutate(year_movie=year_movie,
+                  rating_year=year(as.POSIXct(edx$timestamp,origin,tz=&quot;UTC&quot;)),
+                  rating_delay=rating_year-year_movie)</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-movie_year-parameter" class="section level4">
+<h4>Analyzing “movie_year” parameter</h4>
+<div id="whats-the-rating-distribution-across-movie-years"
+class="section level5">
+<h5>what’s the rating distribution across movie years?</h5>
+<pre class="r"><code>qplot(edx$year_movie)+
+  labs(title=&quot;Distribution of ratings accros movie years&quot;,
+       x=&quot;Year of movie release&quot;,
+       y=&quot;Number of ratings&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<pre class="r"><code>edx%&gt;%group_by(year_movie)%&gt;%summarize(n=n())%&gt;%arrange(desc(n))%&gt;%slice(1:10)# Displays the top movie release years with the highest number of ratings.</code></pre>
+<pre><code>## # A tibble: 10 × 2
+##    year_movie      n
+##         &lt;dbl&gt;  &lt;int&gt;
+##  1       1995 787116
+##  2       1994 671676
+##  3       1996 593442
+##  4       1999 489899
+##  5       1993 481557
+##  6       1997 429928
+##  7       1998 401905
+##  8       2000 382510
+##  9       2001 305561
+## 10       2002 272061</code></pre>
+<p><br />
+The number of ratings increased from the movie year 1910 to 1995.<br />
+There is a important number of ratings for movies released in
+1995.<br />
+After 1995, the number of ratings gradually decreases up to 2010.<br />
+<br />
+</p>
+</div>
+<div
+id="is-there-a-relationship-between-movie-release-year-and-mean-ratings"
+class="section level5">
+<h5>Is there a relationship between movie release year and mean
+ratings?</h5>
+<pre class="r"><code>edx%&gt;%group_by(year_movie)%&gt;%summarize(mean_rating=mean(rating))%&gt;%
+  mutate(year_movie=as.factor(year_movie))%&gt;%
+  ggplot(aes(year_movie,mean_rating))+geom_point(color=&quot;darkgrey&quot;)+
+  geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  geom_text(x=45,y=mean(edx$rating)+0.02,label=&quot;global average rating&quot;,color=&quot;red&quot;)+
+  theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8))+
+  labs(title=&quot;Mean ratings accros movie years&quot;,
+       x=&quot;Year of movie release&quot;,
+       y=&quot;Mean ratings&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-22-1.png" width="672" /><br />
+There seems to be a correlation between the movie release year and the
+mean ratings.<br />
+From 1915 to 1983, most mean ratings are above the global average
+rating.<br />
+After 1983, mean ratings tend to fall below the global average
+rating.<br />
+A possible explanation is that older movies are often watched based on
+recommendations, which might lead to higher average ratings over
+time.<br />
+<br />
+According to this interpretation, it would be more relevant to analyze
+the “rating delay” than “movie year release”<br />
+(“rating delay” = difference between the year of the rating and the year
+of the movie release).<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-rating_delay-parameter" class="section level4">
+<h4>Analyzing “rating_delay” parameter</h4>
+<div id="whats-the-rating-distribution-across-rating-delay"
+class="section level5">
+<h5>what’s the rating distribution across rating delay?</h5>
+<pre class="r"><code>qplot(edx$rating_delay)+
+  labs(title=&quot;Distribution of ratings accross rating delay&quot;,
+       x=&quot;Rating delay&quot;,
+       y=&quot;Number of ratings&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code># Displays the top rating_delay with the highest number of ratings.
+edx%&gt;%group_by(rating_delay)%&gt;%summarize(n=n())%&gt;%arrange(desc(n))%&gt;%slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 × 2
+##    rating_delay       n
+##           &lt;dbl&gt;   &lt;int&gt;
+##  1            1 1068301
+##  2            2  854027
+##  3            3  648254
+##  4            4  473786
+##  5            5  435680
+##  6            6  410133
+##  7            0  380526
+##  8            7  354169
+##  9            8  320514
+## 10            9  292593</code></pre>
+<p><br />
+There is a important number of ratings on the first year after the movie
+relase.<br />
+The the number of ratings gradually decreases.<br />
+<br />
+</p>
+</div>
+<div id="is-there-a-relationship-between-rating-delay-and-mean-ratings"
+class="section level5">
+<h5>Is there a relationship between “rating delay” and mean
+ratings?</h5>
+<pre class="r"><code>edx%&gt;%group_by(rating_delay)%&gt;%summarize(mean_rating=mean(rating))%&gt;%
+  mutate(rating_delay=as.factor(rating_delay))%&gt;%
+ggplot(aes(rating_delay,mean_rating))+geom_line(color=&quot;darkgrey&quot;)+geom_point(color=&quot;darkgrey&quot;)+
+geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  geom_text(x=45,y=mean(edx$rating)+0.02,label=&quot;global average rating&quot;,color=&quot;red&quot;)+
+  ylim(c(3.1,4))+
+  theme(axis.text.x = element_text(angle=90,vjust=0.5,hjust=1,size=8))+
+  labs(title=&quot;Mean ratings accross rating delay&quot;,
+       x=&quot;Rating delay&quot;,
+       y=&quot;Mean ratings&quot;)</code></pre>
+<pre><code>## Warning: Removed 3 rows containing missing values or values outside the scale range
+## (`geom_line()`).</code></pre>
+<pre><code>## `geom_line()`: Each group consists of only one observation.
+## ℹ Do you need to adjust the group aesthetic?</code></pre>
+<pre><code>## Warning: Removed 3 rows containing missing values or values outside the scale range
+## (`geom_point()`).</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-24-1.png" width="672" /><br />
+We can see a correlation between the rating delay and the average
+rating.<br />
+This result permit us to validate the interpretation made with the movie
+year release :<br />
+Older movies are often watched based on recommendations, which might
+lead to higher average ratings over time.<br />
+<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-genres-parameter" class="section level4">
+<h4>Analyzing “genres” parameter</h4>
+<div id="what-are-the-top-10-rated-genres" class="section level5">
+<h5>what are the top 10 rated genres?</h5>
+<pre class="r"><code>edx%&gt;%group_by(genres)%&gt;%summarize(n=n(),mean_rating=mean(rating))%&gt;%
+  filter(n&gt;10)%&gt;%arrange(desc(mean_rating))%&gt;%slice(1:10) </code></pre>
+<pre><code>## # A tibble: 10 × 3
+##    genres                                      n mean_rating
+##    &lt;chr&gt;                                   &lt;int&gt;       &lt;dbl&gt;
+##  1 Drama|Film-Noir|Romance                  2985        4.31
+##  2 Action|Crime|Drama|IMAX                  2333        4.29
+##  3 Animation|Children|Comedy|Crime          7183        4.28
+##  4 Film-Noir|Mystery                        5993        4.24
+##  5 Film-Noir|Romance|Thriller               2420        4.23
+##  6 Crime|Film-Noir|Mystery                  3989        4.23
+##  7 Crime|Film-Noir|Thriller                 4818        4.20
+##  8 Crime|Mystery|Thriller                  26774        4.20
+##  9 Action|Adventure|Comedy|Fantasy|Romance 14809        4.19
+## 10 Crime|Thriller|War                       4611        4.16</code></pre>
+<p><br />
+</p>
+</div>
+<div id="what-are-the-bottom-10-rated-genres" class="section level5">
+<h5>what are the bottom 10 rated genres?</h5>
+<pre class="r"><code>edx%&gt;%group_by(genres)%&gt;%summarize(n=n(),mean_rating=mean(rating))%&gt;%
+  filter(n&gt;10)%&gt;%arrange(-desc(mean_rating))%&gt;%slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 × 3
+##    genres                                          n mean_rating
+##    &lt;chr&gt;                                       &lt;int&gt;       &lt;dbl&gt;
+##  1 Documentary|Horror                            655        1.47
+##  2 Comedy|Film-Noir|Thriller                      23        1.59
+##  3 Action|Horror|Mystery|Thriller                325        1.59
+##  4 Adventure|Drama|Horror|Sci-Fi|Thriller        220        1.73
+##  5 Action|Children|Comedy                        523        1.88
+##  6 Action|Adventure|Drama|Fantasy|Sci-Fi          61        1.89
+##  7 Children|Fantasy|Sci-Fi                        57        1.89
+##  8 Action|Horror|Mystery|Sci-Fi                   23        1.91
+##  9 Action|Adventure|Children                     821        1.91
+## 10 Adventure|Animation|Children|Fantasy|Sci-Fi   691        1.93</code></pre>
+<p><br />
+</p>
+</div>
+<div id="are-there-any-genres-with-a-rate-far-from-the-average"
+class="section level5">
+<h5>Are there any genres with a rate far from the average?</h5>
+<pre class="r"><code>mu &lt;- mean(edx$rating, na.rm = TRUE) 
+edx%&gt;%group_by(genres)%&gt;%mutate(n=n())%&gt;%filter(n&gt;5000)%&gt;%
+  summarize(mean_rating=mean(rating),mu_distance=abs(mu-mean_rating))%&gt;%
+  arrange(desc(mu_distance))%&gt;%
+  slice(1:20)%&gt;%
+  ggplot(aes(genres,mean_rating))+
+  geom_point()+
+  geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  geom_text(x=10,y=mean(edx$rating)+0.1,label=&quot;global average rating&quot;,color=&quot;red&quot;)+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  labs(title=&quot;Top 20 genres with mean ratings far from global average&quot;,
+       x=&quot;Genres&quot;,
+       y=&quot;Mean rating&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-27-1.png" width="672" /><br />
+There is indeed a relationship between genres and mean ratings.<br />
+Some genres highly perform above or below average.<br />
+<br />
+</p>
+</div>
+<div
+id="does-each-genre-individually-have-a-correlation-with-the-rating"
+class="section level5">
+<h5>Does each genre individually have a correlation with the
+rating?</h5>
+<pre class="r"><code>any_genres&lt;-data.frame(genres=c(&quot;Action&quot;,
+                                     &quot;Adventure&quot;,
+                                     &quot;Animation&quot;,
+                                     &quot;Children&quot;,
+                                     &quot;Comedy&quot;,
+                                     &quot;Crime&quot;,
+                                     &quot;Documentary&quot;,
+                                     &quot;Drama&quot;,
+                                     &quot;Fantasy&quot;,
+                                     &quot;FilmNoir&quot;,
+                                     &quot;Horror&quot;,
+                                     &quot;Musical&quot;,
+                                     &quot;Mystery&quot;,
+                                     &quot;Romance&quot;,
+                                     &quot;SciFi&quot;,
+                                     &quot;Thriller&quot;,
+                                     &quot;War&quot;,
+                                     &quot;Western&quot;),
+                       mean_rating=c(edx[str_which(edx$genres,&quot;Action.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Adventure.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Animation.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Children.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Comedy.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Crime.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Documentary.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Drama.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Fantasy.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Film-Noir.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Horror.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Musical.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Mystery.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Romance.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Sci-Fi.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Thriller.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.War.&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull(),
+                         edx[str_which(edx$genres,&quot;.Western&quot;),]%&gt;%summarize(mean(rating))%&gt;%pull()
+                         ))
+
+
+any_genres%&gt;%ggplot(aes(genres,mean_rating))+
+  geom_point()+
+  geom_hline(yintercept = mean(edx$rating),color=&quot;red&quot;)+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<pre class="r"><code>any_genres%&gt;%mutate(mu_distance=abs(mu-mean_rating))%&gt;%
+  arrange(desc(mu_distance))%&gt;%slice(1:20)</code></pre>
+<pre><code>##         genres mean_rating mu_distance
+## 1     FilmNoir    4.034070 0.521605561
+## 2  Documentary    3.212471 0.299992839
+## 3     Thriller    3.735938 0.223473787
+## 4        Drama    3.685897 0.173432927
+## 5      Mystery    3.682222 0.169757639
+## 6    Animation    3.646002 0.133538288
+## 7       Action    3.426305 0.086158587
+## 8    Adventure    3.434406 0.078057471
+## 9       Horror    3.445153 0.067310674
+## 10         War    3.576170 0.063705681
+## 11       SciFi    3.449790 0.062673755
+## 12      Comedy    3.460799 0.051665228
+## 13     Romance    3.559448 0.046984096
+## 14     Western    3.557026 0.044562400
+## 15       Crime    3.551316 0.038851859
+## 16     Fantasy    3.490574 0.021890355
+## 17     Musical    3.503401 0.009062916
+## 18    Children    3.518288 0.005824441</code></pre>
+<p><br />
+Individual genres show clear variations in their average ratings,
+indicating a correlation with the mean rating.<br />
+<br />
+<br />
+</p>
+</div>
+</div>
+<div id="analyzing-our-database-sparsity-ratio" class="section level4">
+<h4>Analyzing our database sparsity ratio</h4>
+<div id="whats-the-sparsity-raito-of-our-database"
+class="section level5">
+<h5>What’s the sparsity raito of our database?</h5>
+<pre class="r"><code>sparsity&lt;-(1-(nrow(edx)/(n_distinct(edx$movieId)*n_distinct(edx$userId))))*100
+sparsity</code></pre>
+<pre><code>## [1] 98.7937</code></pre>
+<p><br />
+The database sparsity ratio is around 98%.<br />
+<br />
+</p>
+</div>
+<div
+id="what-would-be-the-best-filtering-combinations-movieid-userid-to-reduce-the-sparsity-ratio-to-90"
+class="section level5">
+<h5>What would be the best filtering combinations (movieId &amp;
+userId), to reduce the sparsity ratio to 90%?</h5>
+<pre class="r"><code>movie_counts &lt;- edx%&gt;% #Calculate movie rating quantiles
+  group_by(movieId)%&gt;%
+  summarise(n= n())
+u&lt;-seq(from=0,to=1,by=.1)
+movie_percent&lt;-as.data.frame(quantile(movie_counts$n,u))
+colnames(movie_percent)&lt;-&quot;movie_filter&quot;
+movie_percent</code></pre>
+<pre><code>##      movie_filter
+## 0%            1.0
+## 10%          10.0
+## 20%          23.0
+## 30%          40.0
+## 40%          70.0
+## 50%         122.0
+## 60%         210.0
+## 70%         400.0
+## 80%         834.0
+## 90%        2155.4
+## 100%      31336.0</code></pre>
+<pre class="r"><code>user_counts &lt;- edx%&gt;% #Calculate user rating quantiles
+  group_by(userId)%&gt;%
+  summarise(n= n())
+u&lt;-seq(from=0,to=1,by=.1)
+user_percent&lt;-as.data.frame(quantile(user_counts$n,u))
+user_percent</code></pre>
+<pre><code>##      quantile(user_counts$n, u)
+## 0%                           13
+## 10%                          22
+## 20%                          28
+## 30%                          36
+## 40%                          47
+## 50%                          62
+## 60%                          85
+## 70%                         116
+## 80%                         175
+## 90%                         301
+## 100%                       6637</code></pre>
+<pre class="r"><code>colnames(user_percent)&lt;-&quot;user_filter&quot;
+colnames(user_percent)</code></pre>
+<pre><code>## [1] &quot;user_filter&quot;</code></pre>
+<pre class="r"><code>filters_combinations&lt;-expand.grid(user_percent$user_filter,movie_percent$movie_filter) # Create all possible combinations of user and movie filters
+colnames(filters_combinations)&lt;-c(&quot;user_filter&quot;,&quot;movie_filter&quot;)
+filters_combinations&lt;-left_join(filters_combinations,movie_percent,by=&quot;movie_filter&quot;) 
+
+sparseness_study&lt;-mapply(function(user, movie) { #Calculate sparsity and data usage for each filtering combination
+  edx_reduced&lt;-edx%&gt;%group_by(userId)%&gt;%filter(n() &gt;= user)%&gt;%ungroup()%&gt;%
+    group_by(movieId)%&gt;%filter(n() &gt;= movie)%&gt;%ungroup()  
+  n_movies&lt;-n_distinct(edx_reduced$movieId)
+  n_users&lt;-n_distinct(edx_reduced$userId)
+  data.frame(sparseness=c((1-(nrow(edx_reduced)/(n_movies*n_users)))*100),
+             data_used=c((nrow(edx_reduced)/nrow(edx)*100)))
+}, filters_combinations$user_filter, filters_combinations$movie_filter) 
+
+sparseness_study&lt;-as.data.frame(t(sparseness_study))
+sparseness_study&lt;-sparseness_study%&gt;%mutate(user_filter=filters_combinations$user_filter,movie_filter=filters_combinations$movie_filter)
+best_filters&lt;-sparseness_study%&gt;%filter(!sparseness==&quot;NaN&quot;)%&gt;%
+  mutate(sparseness=as.numeric(sparseness),data_used=as.numeric(data_used))%&gt;%filter(sparseness&lt;90)%&gt;%
+  arrange(desc(data_used))#Filtering all the combination resulting to a sparsity =&lt; 90%
+best_filters</code></pre>
+<pre><code>##    sparseness   data_used user_filter movie_filter
+## 1    89.27793 66.37329458          85        834.0
+## 2    89.98702 65.87723128          28       2155.4
+## 3    88.83760 63.45209216          36       2155.4
+## 4    87.30196 60.09930377          47       2155.4
+## 5    86.85246 58.73601301         116        834.0
+## 6    85.30076 55.84019931          62       2155.4
+## 7    87.59583 54.49076401         175        400.0
+## 8    82.49527 50.11733809          85       2155.4
+## 9    82.74388 47.81302038         175        834.0
+## 10   78.35113 42.50611190         116       2155.4
+## 11   88.33238 42.06957042         301        122.0
+## 12   85.62312 40.22398293         301        210.0
+## 13   80.90580 36.56770771         301        400.0
+## 14   71.10842 31.83132870         175       2155.4
+## 15   72.86091 29.77537597         301        834.0
+## 16   53.77064 15.03217589         301       2155.4
+## 17    0.00000  0.34817542          13      31336.0
+## 18    0.00000  0.07374394        6637          1.0</code></pre>
+<p><br />
+To achieve a sparsity level of 90%, around 33.7% of the data must be
+filtered out.<br />
+<br />
+</p>
+</div>
+</div>
+<div id="data-analysis-conclusion" class="section level4">
+<h4>Data analysis conclusion</h4>
+Through our data analysis, we identified several parameters correlated
+with ratings:<br />
+
+<ul>
+<li>
+“movieId”
+</li>
+<li>
+“userId”
+</li>
+<li>
+“movie_year” (movie release year)
+</li>
+<li>
+“rating_delay” (difference between rating year and movie year release)
+</li>
+<li>
+“genres”
+</li>
+</ul>
+We observed that our dataset contains a large number of rows, with over
+9 million ratings.<br />
+With 69.8K users and 10.6K movies, this represents a total of 746
+million possible ratings. <br />
+Our dataset is highly sparse, with an sparsity ratio around 98%.<br />
+Reducing sparsity to an optimal level (~90%) for methods like Singular
+Value Decomposition (SVD), would require filtering out a significant
+part of the data (around 33.7%).<br />
+<br />
+Based on the above observations, we should :<br />
+
+<ul>
+<li>
+Avoid using models heavily affected by sparsity, such as Singular Value
+Decomposition (SVD).
+</li>
+<li>
+Avoid a model requiring a lot of computing resources, given the volume
+of data in our database, such as Linear Models (LM).
+</li>
+<li>
+Instead, favor a manual decomposition approach, calculating each
+parameter bias independently (movieId, userId, movieYear, rating_delay,
+genres).
+</li>
+</ul>
+<p><br />
+<br />
+</p>
+</div>
+</div>
+<div id="model-building" class="section level3">
+<h3>Model building</h3>
+<div
+id="buidling-a-train-and-a-test-set-with-a-test-set-on-20-of-the-data"
+class="section level4">
+<h4>Buidling a train and a test set with a test set on 20% of the
+data</h4>
+<pre class="r"><code>set.seed(1)
+indexes &lt;- split(1:nrow(edx), edx$userId)
+test_ind &lt;- sapply(indexes, function(ind){
+  sample(ind, ceiling(length(ind)*.2))}) %&gt;%
+  unlist(use.names = TRUE) %&gt;% sort()
+test_set&lt;-as.data.frame(edx[test_ind,])
+train_set&lt;-as.data.frame(edx[-test_ind,])
+#deleting the movies that are not in the two sets.
+test_set&lt;-test_set%&gt;%semi_join(train_set,by=&quot;movieId&quot;)
+train_set&lt;-train_set%&gt;%semi_join(test_set,by=&quot;movieId&quot;)</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-1-naive-rmse" class="section level4">
+<h4>Model 1 : Naive RMSE</h4>
+<pre class="r"><code>#Calculate mean rating of the train_set (excluding NA values)
+mu &lt;- mean(train_set$rating, na.rm = TRUE) 
+# Calculating RMSE using global mu as prediction on our test_set
+naive_rmse &lt;- RMSE(test_set$rating, mu)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = &quot;Just the average&quot;, RMSE = naive_rmse)
+rmse_results</code></pre>
+<pre><code>##             method     RMSE
+## 1 Just the average 1.060692</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-2-adding-the-movie-effect" class="section level4">
+<h4>Model 2 : Adding the movie effect</h4>
+<pre class="r"><code># Calculating the average deviation of each movie (movie_effect) from global average (mu). 
+movie_effect&lt;-train_set%&gt;%
+  group_by(movieId)%&gt;%
+  summarize(m_ef=mean(rating)-mu)
+# Creating our prediction by adding the movie effect (m_ef) to the global average (mu) for each movie of the test_set. 
+pred_movie&lt;-left_join(test_set,movie_effect,by=&quot;movieId&quot;)%&gt;%
+  mutate(pred=mu+m_ef)%&gt;%
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_1&lt;-RMSE(test_set$rating,pred_movie)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Just the average&quot;,&quot;Movie effect&quot;), RMSE = c(naive_rmse,RMSE_1))
+rmse_results</code></pre>
+<pre><code>##             method      RMSE
+## 1 Just the average 1.0606916
+## 2     Movie effect 0.9440626</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-3-regularizing-the-movie-effect." class="section level4">
+<h4>Model 3 : Regularizing the movie effect.</h4>
+<p>As seen in the data analysis, there is a lot of rating variability
+for movies with only few ratings.<br />
+Let’s take in consideration this variability in our model by reducing
+the movie effect on the movies with few ratings.<br />
+Regularization can help us to do so.<br />
+</p>
+<pre class="r"><code># Calculating the sum of deviations of each movie from global average (mu),
+# and the number of rating per movie.
+movie_effect_sum&lt;-train_set%&gt;%
+  group_by(movieId)%&gt;%
+  summarize(m_ef_sum=sum(rating-mu),n=n())
+#Tuning the regularization parameter (lambda)
+lambdas &lt;- seq(0, 10, 0.1) # Sequence of lambda values to test
+# Applying each lambda values for regularization and calculating RMSE for each.
+rmses &lt;- sapply(lambdas, function(lambda){
+  movie_effect_reg&lt;-movie_effect_sum%&gt;%
+    mutate(m_ef_reg=m_ef_sum/(n+lambda))%&gt;%
+    select(movieId,m_ef_reg)
+  left_join(test_set,movie_effect_reg, by = &quot;movieId&quot;)%&gt;%mutate(pred=mu+m_ef_reg)%&gt;%
+    summarize(rmse = RMSE(rating, pred))%&gt;%
+    pull(rmse)})
+# Plot RMSEs across different lambda values to visualize the optimal choice
+qplot(lambdas, rmses, geom = &quot;line&quot;) +
+  labs(title=&quot;Lambda tuning for movie effect regularization&quot;,
+    x=&quot;Lambda (regularization parameter)&quot;,
+    y=&quot;RMSE&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<pre class="r"><code># Selecting the optimal lambda
+best_lambda_movie&lt;-lambdas[which.min(rmses)]
+# Updating regularized model with the optimal lambda
+movie_effect_reg&lt;-movie_effect_sum%&gt;%
+  mutate(m_ef_reg=m_ef_sum/(n+best_lambda_movie))%&gt;%
+  select(movieId,m_ef_reg)
+pred_movie_reg&lt;-left_join(test_set, movie_effect_reg, by = &quot;movieId&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg)%&gt;% 
+  mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_2&lt;-RMSE(test_set$rating,pred_movie_reg)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Just the average&quot;,&quot;Movie effect&quot;,&quot;Movie effect regularized&quot;), RMSE = c(naive_rmse,RMSE_1,RMSE_2))
+rmse_results</code></pre>
+<pre><code>##                     method      RMSE
+## 1         Just the average 1.0606916
+## 2             Movie effect 0.9440626
+## 3 Movie effect regularized 0.9439997</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-4-adding-user-effect" class="section level4">
+<h4>Model 4 : Adding user effect</h4>
+<pre class="r"><code># Calculating the average deviation of each user (user_effect) from global average (mu).
+user_effect &lt;- train_set%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  group_by(userId)%&gt;%
+  summarize(u_ef=mean(rating-m_ef_reg)-mu) # Calculating the user_effect by removing mu and the movie effect from each user mean rating. 
+# Creating our prediction by adding the regularized movie effect (m_ef_reg) and the user effect (u_ef) to the global average (mu), 
+# respectively on each movieId, and userId of the test_set.
+pred_user&lt;-test_set%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(user_effect,by=&quot;userId&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef)%&gt;%
+  mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_3&lt;-RMSE(test_set$rating,pred_user)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Just the average&quot;,&quot;Movie effect&quot;,&quot;Movie effect regularized&quot;,&quot;Movie (reg) + User effect&quot;), RMSE = c(naive_rmse,RMSE_1,RMSE_2,RMSE_3))
+rmse_results</code></pre>
+<pre><code>##                      method      RMSE
+## 1          Just the average 1.0606916
+## 2              Movie effect 0.9440626
+## 3  Movie effect regularized 0.9439997
+## 4 Movie (reg) + User effect 0.8663007</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-5-regularizing-the-user-effect" class="section level4">
+<h4>Model 5 : Regularizing the user effect</h4>
+<p>As seen in the data analysis, there is a lot of rating variability
+for the users with only few ratings<br />
+Let’s take in consideration this variability, by regularizing our user
+effect.<br />
+</p>
+<pre class="r"><code># Calculating the sum of deviations of each user from global average (mu),
+# and the number of rating per user.
+user_effect_sum &lt;- train_set%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  group_by(userId)%&gt;%
+  summarize(u_ef_sum=sum(rating-m_ef_reg-mu),n=n())
+# Tuning the regularization parameter (lambda)
+lambdas &lt;- seq(0, 10, 0.1) # Sequence of lambda values to test
+# Applying each lambda values for regularization and calculating RMSE for each.
+rmses &lt;- sapply(lambdas, function(lambda){
+ user_effect_reg&lt;-user_effect_sum%&gt;%
+   mutate(u_ef_reg=u_ef_sum/(n+lambda))%&gt;%
+   select(userId,u_ef_reg)
+pred_movie_reg&lt;-test_set%&gt;%
+  left_join(movie_effect_reg, by = &quot;movieId&quot;)%&gt;%
+  left_join(user_effect_reg, by = &quot;userId&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg)%&gt;%
+  summarize(rmse = RMSE(rating, pred))%&gt;%
+  pull(rmse)})
+# Plot RMSEs across different lambda values to visualize the optimal choice
+qplot(lambdas, rmses, geom = &quot;line&quot;) +
+  labs(title=&quot;Lambda tuning for user effect regularization&quot;,
+       x=&quot;Lambda (regularization parameter)&quot;,
+       y=&quot;RMSE&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<pre class="r"><code># Selecting the optimal lambda
+best_lambda_user&lt;-lambdas[which.min(rmses)]
+# Updating regularized model with the optimal lambda
+user_effect_reg&lt;-user_effect_sum%&gt;%
+  mutate(u_ef_reg=u_ef_sum/(n+best_lambda_user))%&gt;%
+  select(userId,u_ef_reg)
+pred_user_reg&lt;-test_set%&gt;%
+  left_join(user_effect_reg,by = &quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by = &quot;movieId&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg)%&gt;%
+  mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_4&lt;-RMSE(test_set$rating,pred_user_reg)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4))
+rmse_results</code></pre>
+<pre><code>##                                 method      RMSE
+## 1                      Target: RMSE &lt;  0.8649000
+## 2                     Just the average 1.0606916
+## 3                         Movie effect 0.9440626
+## 4             Movie effect regularized 0.9439997
+## 5            Movie (reg) + User effect 0.8663007
+## 6 Movie+User effect (both regularized) 0.8658278</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-6-add-the-movies-year-effect" class="section level4">
+<h4>Model 6 : Add the movie’s year effect</h4>
+<pre class="r"><code># Calculating the average deviation of each movie year (movie year effect) from global average (mu). 
+year_effect&lt;-train_set%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  group_by(year_movie)%&gt;%
+  summarize(y_ef=mean(rating-u_ef_reg-m_ef_reg)-mu) # Calculating the movie_year effect by removing mu and previous effect from each mean rating. 
+# Creating our prediction by adding all previous effect and the movie year effect (y_ef) to the global average (mu) on the test_set
+pred_year&lt;-left_join(test_set,year_effect,by=&quot;year_movie&quot;)%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef)%&gt;%pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_5&lt;-RMSE(test_set$rating,pred_year)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4,
+                                    RMSE_5))
+rmse_results</code></pre>
+<pre><code>##                                        method      RMSE
+## 1                             Target: RMSE &lt;  0.8649000
+## 2                            Just the average 1.0606916
+## 3                                Movie effect 0.9440626
+## 4                    Movie effect regularized 0.9439997
+## 5                   Movie (reg) + User effect 0.8663007
+## 6        Movie+User effect (both regularized) 0.8658278
+## 7 Movie+User effect (both regularized) + year 0.8656719</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+</div>
+<div id="model-7-regularizing-the-movie-year-effect"
+class="section level2">
+<h2>Model 7 : Regularizing the movie year effect</h2>
+<div id="section" class="section level47">
+<p class="heading"></p>
+<p>As seen in the data analysis, there are many more ratings for the
+recent movies.<br />
+Let’s take in consideration the variability due to the movie year.<br />
+</p>
+<pre class="r"><code># Calculating the sum of deviations of each movie_year from global average (mu),
+# and the number of rating per movie_year.
+year_effect_sum &lt;- train_set%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  group_by(year_movie)%&gt;%
+  summarize(y_ef_sum=sum(rating-m_ef_reg-u_ef_reg-mu),n=n())
+# Tuning the regularization parameter (lambda)
+lambdas &lt;- seq(10,35, 0.1) # Sequence of lambda values to test
+# Applying each lambda values for regularization and calculating RMSE for each.
+rmses &lt;- sapply(lambdas, function(lambda){
+  year_effect_reg&lt;-year_effect_sum%&gt;%
+    mutate(y_ef_reg=y_ef_sum/(n+lambda))%&gt;%
+    select(year_movie,y_ef_reg)
+  pred_year_reg&lt;-test_set%&gt;%
+    left_join(movie_effect_reg, by = &quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg, by = &quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg, by = &quot;year_movie&quot;)%&gt;%
+    mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg)%&gt;%
+    summarize(rmse = RMSE(rating, pred))%&gt;%
+    pull(rmse)
+})
+# Plot RMSEs across different lambda values to visualize the optimal choice
+qplot(lambdas, rmses, geom = &quot;line&quot;) +
+  labs(title=&quot;Lambda tuning for movie year effect regularization&quot;,
+       x=&quot;Lambda (regularization parameter)&quot;,
+       y=&quot;RMSE&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<pre class="r"><code># Selecting the optimal lambda
+best_lambda_year&lt;-lambdas[which.min(rmses)]
+# Updating regularized model with the optimal lambda
+year_effect_reg&lt;-year_effect_sum%&gt;%
+  mutate(y_ef_reg=y_ef_sum/(n+best_lambda_year))%&gt;%
+  select(year_movie,y_ef_reg)
+pred_year_reg&lt;-test_set%&gt;%
+  left_join(user_effect_reg,by = &quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by = &quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by = &quot;year_movie&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg)%&gt;%
+  mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_6&lt;-RMSE(test_set$rating,pred_year_reg)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;,
+                                      &quot;Movie+User+year effect (all regularized)&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4,
+                                    RMSE_5,
+                                    RMSE_6))
+rmse_results</code></pre>
+<pre><code>##                                        method      RMSE
+## 1                             Target: RMSE &lt;  0.8649000
+## 2                            Just the average 1.0606916
+## 3                                Movie effect 0.9440626
+## 4                    Movie effect regularized 0.9439997
+## 5                   Movie (reg) + User effect 0.8663007
+## 6        Movie+User effect (both regularized) 0.8658278
+## 7 Movie+User effect (both regularized) + year 0.8656719
+## 8    Movie+User+year effect (all regularized) 0.8655682</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-8-add-the-rating-delay-effect" class="section level4">
+<h4>Model 8 : Add the rating delay effect</h4>
+<pre class="r"><code># Calculating the average deviation of each rating delay (rating_delay effect) from global average (mu). 
+delay_effect&lt;-train_set%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+  group_by(rating_delay)%&gt;%
+  summarize(d_ef=mean(rating-u_ef_reg-m_ef_reg-y_ef_reg)-mu) # Calculating the rating delay effect by removing mu and previous effect from each mean rating. 
+# Creating our prediction by adding all previous effect and the rating effect (d_ef) to the global average (mu), on the test_set
+pred_delay&lt;-test_set%&gt;%
+  left_join(delay_effect,by=&quot;rating_delay&quot;)%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef)%&gt;%pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_7&lt;-RMSE(test_set$rating,pred_delay)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;,
+                                      &quot;Movie+User+year effect (all regularized)&quot;,
+                                      &quot;Movie+User+year effect (all regularized) + comment delay&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4,
+                                    RMSE_5,
+                                    RMSE_6,
+                                    RMSE_7))
+rmse_results</code></pre>
+<pre><code>##                                                     method      RMSE
+## 1                                          Target: RMSE &lt;  0.8649000
+## 2                                         Just the average 1.0606916
+## 3                                             Movie effect 0.9440626
+## 4                                 Movie effect regularized 0.9439997
+## 5                                Movie (reg) + User effect 0.8663007
+## 6                     Movie+User effect (both regularized) 0.8658278
+## 7              Movie+User effect (both regularized) + year 0.8656719
+## 8                 Movie+User+year effect (all regularized) 0.8655682
+## 9 Movie+User+year effect (all regularized) + comment delay 0.8653094</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-9-regularizing-the-rating-delay-effect"
+class="section level4">
+<h4>Model 9 : Regularizing the rating delay effect</h4>
+<pre class="r"><code># Calculating the sum of deviations of each rating_delay from global average (mu),
+# and the number of rating per rating_delay
+delay_effect_sum &lt;- train_set%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+  group_by(rating_delay)%&gt;%
+  summarize(d_ef_sum=sum(rating-m_ef_reg-u_ef_reg-y_ef_reg-mu),n=n())
+# Tuning the regularization parameter (lambda)
+lambdas &lt;- seq(180,200,.1) # Sequence of lambda values to test
+# Applying each lambda values for regularization and calculating RMSE for each.
+rmses &lt;- sapply(lambdas, function(lambda){
+  delay_effect_reg&lt;-delay_effect_sum%&gt;%
+    mutate(d_ef_reg=d_ef_sum/(n+lambda))%&gt;%
+    select(rating_delay,d_ef_reg)
+  pred_delay_reg&lt;-test_set%&gt;%
+    left_join(movie_effect_reg, by = &quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg, by = &quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg, by = &quot;year_movie&quot;)%&gt;%
+    left_join(delay_effect_reg, by = &quot;rating_delay&quot;)%&gt;%
+    mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg)%&gt;%
+    summarize(rmse = RMSE(rating, pred))%&gt;%
+    pull(rmse)})
+# Plot RMSEs across different lambda values to visualize the optimal choice
+qplot(lambdas, rmses, geom = &quot;line&quot;) +
+  labs(title=&quot;Lambda tuning for rating delay effect regularization&quot;,
+       x=&quot;Lambda (regularization parameter)&quot;,
+       y=&quot;RMSE&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<pre class="r"><code># Selecting the optimal lambda
+best_lambda_delay&lt;-lambdas[which.min(rmses)]
+# Updating regularized model with the optimal lambda
+delay_effect_reg&lt;-delay_effect_sum%&gt;%
+  mutate(d_ef_reg=d_ef_sum/(n+best_lambda_delay))%&gt;%
+  select(rating_delay,d_ef_reg)
+pred_delay_reg&lt;-test_set%&gt;%
+  left_join(user_effect_reg,by = &quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by = &quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by = &quot;year_movie&quot;)%&gt;%
+  left_join(delay_effect_reg,by = &quot;rating_delay&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg)%&gt;%
+  mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_8&lt;-RMSE(test_set$rating,pred_delay_reg)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;,
+                                      &quot;Movie+User+year effect (all regularized)&quot;,
+                                      &quot;Movie+User+year effect (all regularized) + comment delay&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized)&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4,
+                                    RMSE_5,
+                                    RMSE_6,
+                                    RMSE_7,
+                                    RMSE_8))
+rmse_results</code></pre>
+<pre><code>##                                                      method      RMSE
+## 1                                           Target: RMSE &lt;  0.8649000
+## 2                                          Just the average 1.0606916
+## 3                                              Movie effect 0.9440626
+## 4                                  Movie effect regularized 0.9439997
+## 5                                 Movie (reg) + User effect 0.8663007
+## 6                      Movie+User effect (both regularized) 0.8658278
+## 7               Movie+User effect (both regularized) + year 0.8656719
+## 8                  Movie+User+year effect (all regularized) 0.8655682
+## 9  Movie+User+year effect (all regularized) + comment delay 0.8653094
+## 10   Movie+User+year+comment delay effect (all regularized) 0.8652041</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-10-adding-the-genres-effect" class="section level4">
+<h4>Model 10 : adding the genres effect</h4>
+<pre class="r"><code># Calculating the average deviation of each genre (genres_effect) from global average (mu). 
+genre_effect&lt;-train_set%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+  left_join(delay_effect_reg,by=&quot;rating_delay&quot;)%&gt;%
+  group_by(genres)%&gt;%
+  summarize(g_ef=mean(rating-u_ef_reg-m_ef_reg-y_ef_reg-d_ef_reg)-mu) # Calculating the genres effect by removing mu and previous effect from each mean rating. 
+# Creating our prediction by adding all previous effect and the rating effect (g_ef) to the global average (mu), on the test_set
+pred_genre&lt;-test_set%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+  left_join(delay_effect_reg,by=&quot;rating_delay&quot;)%&gt;%
+  left_join(genre_effect,by=&quot;genres&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg+g_ef)%&gt;%pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_9&lt;-RMSE(test_set$rating,pred_genre)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;,
+                                      &quot;Movie+User+year effect (all regularized)&quot;,
+                                      &quot;Movie+User+year effect (all regularized) + comment delay&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized)&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized) + genres&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4,
+                                    RMSE_5,
+                                    RMSE_6,
+                                    RMSE_7,
+                                    RMSE_8,
+                                    RMSE_9))
+rmse_results</code></pre>
+<pre><code>##                                                             method      RMSE
+## 1                                                  Target: RMSE &lt;  0.8649000
+## 2                                                 Just the average 1.0606916
+## 3                                                     Movie effect 0.9440626
+## 4                                         Movie effect regularized 0.9439997
+## 5                                        Movie (reg) + User effect 0.8663007
+## 6                             Movie+User effect (both regularized) 0.8658278
+## 7                      Movie+User effect (both regularized) + year 0.8656719
+## 8                         Movie+User+year effect (all regularized) 0.8655682
+## 9         Movie+User+year effect (all regularized) + comment delay 0.8653094
+## 10          Movie+User+year+comment delay effect (all regularized) 0.8652041
+## 11 Movie+User+year+comment delay effect (all regularized) + genres 0.8651047</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-11-regularizing-the-genres-effect"
+class="section level4">
+<h4>Model 11 : Regularizing the genres effect</h4>
+<pre class="r"><code># Calculating the sum of deviations of each genres from global average (mu),
+# and the number of rating per genres
+genre_effect_sum &lt;- train_set%&gt;%
+  left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+  left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+  left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+  left_join(delay_effect_reg,by=&quot;rating_delay&quot;)%&gt;%
+  group_by(genres)%&gt;%
+  summarize(g_ef_sum=sum(rating-m_ef_reg-u_ef_reg-y_ef_reg-d_ef_reg-mu),n=n())
+# Tuning the regularization parameter (lambda)
+lambdas &lt;- seq(5,15,.1) # Sequence of lambda values to test
+# Applying each lambda values for regularization and calculating RMSE for each.
+rmses &lt;- sapply(lambdas, function(lambda){
+  genre_effect_reg&lt;-genre_effect_sum%&gt;%
+    mutate(g_ef_reg=g_ef_sum/(n+lambda))%&gt;%
+    select(genres,g_ef_reg)
+  pred_genre_reg&lt;-test_set%&gt;%
+    left_join(movie_effect_reg, by = &quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg, by = &quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg, by = &quot;year_movie&quot;)%&gt;%
+    left_join(delay_effect_reg, by = &quot;rating_delay&quot;)%&gt;%
+    left_join(genre_effect_reg, by = &quot;genres&quot;)%&gt;%
+    mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg+g_ef_reg)%&gt;%
+    summarize(rmse = RMSE(rating, pred))%&gt;%
+    pull(rmse)})
+# Plot RMSEs across different lambda values to visualize the optimal choice
+qplot(lambdas, rmses, geom = &quot;line&quot;) +
+  labs(title=&quot;Lambda tuning for genre effect regularization&quot;,
+       x=&quot;Lambda (regularization parameter)&quot;,
+       y=&quot;RMSE&quot;)</code></pre>
+<p><img src="movie_recommendation_system_v2_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<pre class="r"><code># Selecting the optimal lambda
+best_lambda_genre&lt;-lambdas[which.min(rmses)]
+# Updating regularized model with the optimal lambda
+genre_effect_reg&lt;-genre_effect_sum%&gt;%
+  mutate(g_ef_reg=g_ef_sum/(n+best_lambda_genre))%&gt;%
+  select(genres,g_ef_reg)
+pred_genre_reg&lt;-test_set%&gt;%
+  left_join(user_effect_reg,by = &quot;userId&quot;)%&gt;%
+  left_join(movie_effect_reg,by = &quot;movieId&quot;)%&gt;%
+  left_join(year_effect_reg,by = &quot;year_movie&quot;)%&gt;%
+  left_join(delay_effect_reg,by = &quot;rating_delay&quot;)%&gt;%
+  left_join(genre_effect_reg,by = &quot;genres&quot;)%&gt;%
+  mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg+g_ef_reg)%&gt;%
+  mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+  pull(pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_10&lt;-RMSE(test_set$rating,pred_genre_reg)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;,
+                                      &quot;Movie+User+year effect (all regularized)&quot;,
+                                      &quot;Movie+User+year effect (all regularized) + comment delay&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized)&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized) + genres&quot;,
+                                      &quot;Movie+User+year+comment delay+genres effect (all regularized)&quot;), 
+                           RMSE = c(0.86490,
+                                    naive_rmse,
+                                    RMSE_1,
+                                    RMSE_2,
+                                    RMSE_3,
+                                    RMSE_4,
+                                    RMSE_5,
+                                    RMSE_6,
+                                    RMSE_7,
+                                    RMSE_8,
+                                    RMSE_9,
+                                    RMSE_10))
+rmse_results</code></pre>
+<pre><code>##                                                             method      RMSE
+## 1                                                  Target: RMSE &lt;  0.8649000
+## 2                                                 Just the average 1.0606916
+## 3                                                     Movie effect 0.9440626
+## 4                                         Movie effect regularized 0.9439997
+## 5                                        Movie (reg) + User effect 0.8663007
+## 6                             Movie+User effect (both regularized) 0.8658278
+## 7                      Movie+User effect (both regularized) + year 0.8656719
+## 8                         Movie+User+year effect (all regularized) 0.8655682
+## 9         Movie+User+year effect (all regularized) + comment delay 0.8653094
+## 10          Movie+User+year+comment delay effect (all regularized) 0.8652041
+## 11 Movie+User+year+comment delay effect (all regularized) + genres 0.8651047
+## 12   Movie+User+year+comment delay+genres effect (all regularized) 0.8649914</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-12-cross-validation-on-the-final-model"
+class="section level4">
+<h4>Model 12 : Cross validation on the final model</h4>
+<pre class="r"><code>#Making a cross validation training on our model applying all regularized effect.
+# Creating different random seeds, to generate different train and test set.
+seeds&lt;-c(1,220,3330,44440,555550) 
+#Making a cross-validation loop across all different seeds
+all_preds&lt;-sapply(seeds,function(seed){
+  set.seed(seed) 
+  #Buidling a train and a test set with a test set on 20% of the data
+  indexes &lt;- split(1:nrow(edx), edx$userId)  
+  test_ind &lt;- sapply(indexes, function(ind){ 
+    sample(ind, ceiling(length(ind)*.2))}) %&gt;%
+    unlist(use.names = TRUE) %&gt;% sort()
+  test_set&lt;-as.data.frame(edx[test_ind,])
+  train_set&lt;-as.data.frame(edx[-test_ind,])
+  #deleting the movies that aren&#39;t in the two sets.
+  test_set&lt;-test_set%&gt;%semi_join(train_set,by=&quot;movieId&quot;)
+  train_set&lt;-train_set%&gt;%semi_join(test_set,by=&quot;movieId&quot;)
+  
+  ###### Calculating the regularized movie effect
+  movie_effect_sum&lt;-train_set%&gt;%
+    group_by(movieId)%&gt;%
+    summarize(m_ef_sum=sum(rating-mu),n=n())
+  
+  movie_effect_reg&lt;-movie_effect_sum%&gt;%
+    mutate(m_ef_reg=m_ef_sum/(n+best_lambda_movie))%&gt;%
+    select(movieId,m_ef_reg)
+  
+  ###### Calculating the regularized user effect
+  user_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    group_by(userId)%&gt;%
+    summarize(u_ef_sum=sum(rating-m_ef_reg-mu),n=n())
+  
+  user_effect_reg&lt;-user_effect_sum%&gt;%
+    mutate(u_ef_reg=u_ef_sum/(n+best_lambda_user))%&gt;%
+    select(userId,u_ef_reg)
+
+  ###### Calculating the regularized movie year effect
+  year_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+    group_by(year_movie)%&gt;%
+    summarize(y_ef_sum=sum(rating-m_ef_reg-u_ef_reg-mu),n=n())
+
+  year_effect_reg&lt;-year_effect_sum%&gt;%
+    mutate(y_ef_reg=y_ef_sum/(n+best_lambda_year))%&gt;%
+    select(year_movie,y_ef_reg)
+  
+  ###### Calculating the regularized delay effect
+  delay_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+    group_by(rating_delay)%&gt;%
+    summarize(d_ef_sum=sum(rating-m_ef_reg-u_ef_reg-y_ef_reg-mu),n=n())
+  
+  delay_effect_reg&lt;-delay_effect_sum%&gt;%
+    mutate(d_ef_reg=d_ef_sum/(n+best_lambda_delay))%&gt;%
+    select(rating_delay,d_ef_reg)
+  
+  ###### Calculating the regularized genre effect
+  genre_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+    left_join(delay_effect_reg,by=&quot;rating_delay&quot;)%&gt;%
+    group_by(genres)%&gt;%
+    summarize(g_ef_sum=sum(rating-m_ef_reg-u_ef_reg-y_ef_reg-d_ef_reg-mu),n=n())
+
+  genre_effect_reg&lt;-genre_effect_sum%&gt;%
+    mutate(g_ef_reg=g_ef_sum/(n+best_lambda_genre))%&gt;%
+    select(genres,g_ef_reg)
+  
+  #### Making the predictions
+  prediction&lt;-test_set%&gt;%
+    left_join(user_effect_reg,by = &quot;userId&quot;)%&gt;%
+    left_join(movie_effect_reg,by = &quot;movieId&quot;)%&gt;%
+    left_join(year_effect_reg,by = &quot;year_movie&quot;)%&gt;%
+    left_join(delay_effect_reg,by = &quot;rating_delay&quot;)%&gt;%
+    left_join(genre_effect_reg,by = &quot;genres&quot;)%&gt;%
+    mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg+g_ef_reg)%&gt;%
+    mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+    select(userId,movieId,pred)
+})
+# Creating dataframes for each prediction of the loop
+pred1&lt;-data.frame(userId=all_preds[,1]$userId,
+                  movieId=all_preds[,1]$movieId,
+                  pred=all_preds[,1]$pred)
+pred2&lt;-data.frame(userId=all_preds[,2]$userId,
+                  movieId=all_preds[,2]$movieId,
+                  pred=all_preds[,2]$pred)
+pred3&lt;-data.frame(userId=all_preds[,3]$userId,
+                  movieId=all_preds[,3]$movieId,
+                  pred=all_preds[,3]$pred)
+pred4&lt;-data.frame(userId=all_preds[,4]$userId,
+                  movieId=all_preds[,4]$movieId,
+                  pred=all_preds[,4]$pred)
+pred5&lt;-data.frame(userId=all_preds[,5]$userId,
+                  movieId=all_preds[,5]$movieId,
+                  pred=all_preds[,5]$pred)
+# Adding all predictions to the test_set 
+all_preds&lt;-test_set%&gt;%select(movieId,userId)%&gt;%
+  left_join(pred1,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+  left_join(pred2,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+    left_join(pred3,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+    left_join(pred4,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+    left_join(pred5,by=c(&quot;movieId&quot;,&quot;userId&quot;))
+# Adding column names to the dataframe 
+colnames(all_preds)&lt;-c(&quot;movieId&quot;,&quot;userId&quot;,&quot;pred1&quot;,&quot;pred2&quot;,&quot;pred3&quot;,&quot;pred4&quot;,&quot;pred5&quot;)
+# Creating the average prediction from the 5 predictions
+pred&lt;-all_preds%&gt;%mutate(mean_pred=rowMeans(all_preds[,3:7],na.rm=TRUE))%&gt;%pull(mean_pred)
+# Calculating RMSE using our prediction on our test_set
+RMSE_11&lt;-RMSE(test_set$rating,pred)
+# Saving the RMSE result into a data frame for future comparison
+rmse_results &lt;- data.frame(method = c(&quot;Target: RMSE &lt; &quot;,
+                                      &quot;Just the average&quot;,
+                                      &quot;Movie effect&quot;,
+                                      &quot;Movie effect regularized&quot;,
+                                      &quot;Movie (reg) + User effect&quot;,
+                                      &quot;Movie+User effect (both regularized)&quot;,
+                                      &quot;Movie+User effect (both regularized) + year&quot;,
+                                      &quot;Movie+User+year effect (all regularized)&quot;,
+                                      &quot;Movie+User+year effect (all regularized) + comment delay&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized)&quot;,
+                                      &quot;Movie+User+year+comment delay effect (all regularized) + genres&quot;,
+                                      &quot;Movie+User+year+comment delay+genres effect (all regularized)&quot;,
+                                      &quot;Cross validation on the last Model&quot;), 
+RMSE = c(0.86490,
+         naive_rmse,
+         RMSE_1,
+         RMSE_2,
+         RMSE_3,
+         RMSE_4,
+         RMSE_5,
+         RMSE_6,
+         RMSE_7,
+         RMSE_8,
+         RMSE_9,
+         RMSE_10,
+         RMSE_11))
+
+rmse_results</code></pre>
+<pre><code>##                                                             method      RMSE
+## 1                                                  Target: RMSE &lt;  0.8649000
+## 2                                                 Just the average 1.0606916
+## 3                                                     Movie effect 0.9440626
+## 4                                         Movie effect regularized 0.9439997
+## 5                                        Movie (reg) + User effect 0.8663007
+## 6                             Movie+User effect (both regularized) 0.8658278
+## 7                      Movie+User effect (both regularized) + year 0.8656719
+## 8                         Movie+User+year effect (all regularized) 0.8655682
+## 9         Movie+User+year effect (all regularized) + comment delay 0.8653094
+## 10          Movie+User+year+comment delay effect (all regularized) 0.8652041
+## 11 Movie+User+year+comment delay effect (all regularized) + genres 0.8651047
+## 12   Movie+User+year+comment delay+genres effect (all regularized) 0.8649914
+## 13                              Cross validation on the last Model 0.8647048</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="model-evaluation" class="section level3">
+<h3>Model evaluation</h3>
+<p>Evaluating our cross validation model on “final_holdout_test”.<br />
+</p>
+<pre class="r"><code># Preparing the data (creating year_movie, rating_year and rating_delay)
+year_movie&lt;-str_extract_all(final_holdout_test$title, &quot;\\([0-9]{4}\\)$&quot;,simplify=TRUE)
+year_movie&lt;-as.numeric(str_extract_all(year_movie, &quot;[0-9]{4}&quot;,simplify=TRUE))
+
+final_holdout_test&lt;-final_holdout_test%&gt;%mutate(year_movie=year_movie,
+                                                rating_year=year(as.POSIXct(final_holdout_test$timestamp,origin,tz=&quot;UTC&quot;)),
+                                                rating_delay=rating_year-year_movie)
+# Creating different random seeds, to generate different train and test set.
+seeds&lt;-c(1,220,3330,44440,555550)
+#Making a cross-validation loop across all different seeds
+all_preds&lt;-sapply(seeds,function(seed){
+  set.seed(seed)
+  #Buidling a train and a test set with a test set on 20% of the data
+  indexes &lt;- split(1:nrow(edx), edx$userId)
+  test_ind &lt;- sapply(indexes, function(ind){
+    sample(ind, ceiling(length(ind)*.2))}) %&gt;%
+    unlist(use.names = TRUE) %&gt;% sort()
+  test_set&lt;-as.data.frame(edx[test_ind,])
+  train_set&lt;-as.data.frame(edx[-test_ind,])
+  #deleting the movies that aren&#39;t in the two sets.
+  test_set&lt;-test_set%&gt;%semi_join(train_set,by=&quot;movieId&quot;)
+  train_set&lt;-train_set%&gt;%semi_join(test_set,by=&quot;movieId&quot;)
+  
+  ###### Calculating the regularized movie effect
+  movie_effect_sum&lt;-train_set%&gt;%
+    group_by(movieId)%&gt;%
+    summarize(m_ef_sum=sum(rating-mu),n=n())
+  
+  movie_effect_reg&lt;-movie_effect_sum%&gt;%
+    mutate(m_ef_reg=m_ef_sum/(n+best_lambda_movie))%&gt;%
+    select(movieId,m_ef_reg)
+  
+  ###### Calculating the regularized user effect
+  user_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    group_by(userId)%&gt;%
+    summarize(u_ef_sum=sum(rating-m_ef_reg-mu),n=n())
+  
+  user_effect_reg&lt;-user_effect_sum%&gt;%
+    mutate(u_ef_reg=u_ef_sum/(n+best_lambda_user))%&gt;%
+    select(userId,u_ef_reg)
+  
+  ###### Calculating the regularized movie year effect
+  year_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+    group_by(year_movie)%&gt;%
+    summarize(y_ef_sum=sum(rating-m_ef_reg-u_ef_reg-mu),n=n())
+  
+  year_effect_reg&lt;-year_effect_sum%&gt;%
+    mutate(y_ef_reg=y_ef_sum/(n+best_lambda_year))%&gt;%
+    select(year_movie,y_ef_reg)
+  
+  ###### Calculating the regularized delay effect
+  delay_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+    group_by(rating_delay)%&gt;%
+    summarize(d_ef_sum=sum(rating-m_ef_reg-u_ef_reg-y_ef_reg-mu),n=n())
+  
+  delay_effect_reg&lt;-delay_effect_sum%&gt;%
+    mutate(d_ef_reg=d_ef_sum/(n+best_lambda_delay))%&gt;%
+    select(rating_delay,d_ef_reg)
+  
+  ###### Calculating the regularized genre effect
+  genre_effect_sum &lt;- train_set%&gt;%
+    left_join(movie_effect_reg,by=&quot;movieId&quot;)%&gt;%
+    left_join(user_effect_reg,by=&quot;userId&quot;)%&gt;%
+    left_join(year_effect_reg,by=&quot;year_movie&quot;)%&gt;%
+    left_join(delay_effect_reg,by=&quot;rating_delay&quot;)%&gt;%
+    group_by(genres)%&gt;%
+    summarize(g_ef_sum=sum(rating-m_ef_reg-u_ef_reg-y_ef_reg-d_ef_reg-mu),n=n())
+  
+  genre_effect_reg&lt;-genre_effect_sum%&gt;%
+    mutate(g_ef_reg=g_ef_sum/(n+best_lambda_genre))%&gt;%
+    select(genres,g_ef_reg)
+  
+  #### Making the predictions
+  prediction&lt;-final_holdout_test%&gt;%
+    left_join(user_effect_reg,by = &quot;userId&quot;)%&gt;%
+    left_join(movie_effect_reg,by = &quot;movieId&quot;)%&gt;%
+    left_join(year_effect_reg,by = &quot;year_movie&quot;)%&gt;%
+    left_join(delay_effect_reg,by = &quot;rating_delay&quot;)%&gt;%
+    left_join(genre_effect_reg,by = &quot;genres&quot;)%&gt;%
+    mutate(pred=mu+m_ef_reg+u_ef_reg+y_ef_reg+d_ef_reg+g_ef_reg)%&gt;%
+    mutate(pred=ifelse(pred&lt;0,0,ifelse(pred&gt;5,5,pred)))%&gt;% # Limiting the prediction to valid rating range (0 to 5)
+    select(userId,movieId,pred)
+})
+# Creating dataframes for each prediction of the loop
+pred1&lt;-data.frame(userId=all_preds[,1]$userId,
+                  movieId=all_preds[,1]$movieId,
+                  pred=all_preds[,1]$pred)
+pred2&lt;-data.frame(userId=all_preds[,2]$userId,
+                  movieId=all_preds[,2]$movieId,
+                  pred=all_preds[,2]$pred)
+pred3&lt;-data.frame(userId=all_preds[,3]$userId,
+                  movieId=all_preds[,3]$movieId,
+                  pred=all_preds[,3]$pred)
+pred4&lt;-data.frame(userId=all_preds[,4]$userId,
+                  movieId=all_preds[,4]$movieId,
+                  pred=all_preds[,4]$pred)
+pred5&lt;-data.frame(userId=all_preds[,5]$userId,
+                  movieId=all_preds[,5]$movieId,
+                  pred=all_preds[,5]$pred)
+# Adding all predictions to the final_holdout_test&quot; 
+all_preds&lt;-final_holdout_test%&gt;%select(movieId,userId)%&gt;%
+  left_join(pred1,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+  left_join(pred2,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+  left_join(pred3,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+  left_join(pred4,by=c(&quot;movieId&quot;,&quot;userId&quot;))%&gt;%
+  left_join(pred5,by=c(&quot;movieId&quot;,&quot;userId&quot;))
+# Adding column names to the dataframe 
+colnames(all_preds)&lt;-c(&quot;movieId&quot;,&quot;userId&quot;,&quot;pred1&quot;,&quot;pred2&quot;,&quot;pred3&quot;,&quot;pred4&quot;,&quot;pred5&quot;)
+# Creating the average prediction from the 5 predictions
+pred&lt;-all_preds%&gt;%mutate(mean_pred=rowMeans(all_preds[,3:7],na.rm=TRUE))%&gt;%pull(mean_pred)
+NAs&lt;- which(is.na(pred), arr.ind=TRUE) # Identifying NAs positions in our pred data frame
+mu&lt;-mean(train_set$rating,na.rm=TRUE) # Defining &quot;mu&quot; as the train_set global rating average
+pred[NAs]&lt;-mu #replacing pred NAs by &quot;mu&quot;
+# Calculating RMSE using our prediction on &quot;our test_set&quot;final_holdout_test&quot;
+final_RMSE&lt;-RMSE(final_holdout_test$rating,pred)
+# Comparing our RMSE result with our RMSE target
+rmse_results &lt;- data.frame(method = c(&quot;Target RMSE &lt; &quot;,
+                                      &quot;Final model =&quot;), 
+                           RMSE = c(0.86490,
+                                    final_RMSE))
+rmse_results</code></pre>
+<pre><code>##           method      RMSE
+## 1 Target RMSE &lt;  0.8649000
+## 2  Final model = 0.8641906</code></pre>
+<p><br />
+<br />
+</p>
+</div>
+<div id="conclusion" class="section level3">
+<h3>Conclusion</h3>
+By analyzing all dataset parameters, we identified several correlations
+with movie ratings.<br />
+This allowed us to construct a handmade Linear Model by calculating the
+bias associated with each correlated parameter.<br />
+By applying cross-validation to this model, we achieved an RMSE below
+our target (around 8.855 × 10^-4)<br />
+<br />
+To further improve our model, several approaches can be
+considered:<br />
+
+<ul>
+<li>
+Incorporating title size effect:<br />
+We could analyze the impact of the number of characters in movie titles
+on ratings and include this effect in our model.
+</li>
+<li>
+Optimizing cross-validation batches:<br />
+Currently, our model uses a 5-batch cross-validation strategy.<br />
+Testing different numbers of batches (e.g., 10, 20, or more) might help
+optimize the model between underfitting and overfitting.
+</li>
+<li>
+Adding additional parameters:<br />
+Integrating additional features from the original dataset (e.g., user
+profiles, location) could refine the bias estimation and improve
+predictive performance.
+</li>
+<li>
+Reducing sparsity with more data:<br />
+Increasing the volume of data in our dataset would reduce sparsity,
+potentially permit us the use of advanced methods like matrix
+factorization techniques (eg. Singular Value Decomposition (SVD)).
+</li>
+<br />
+
+</ul>
+<p>All the improvement above could lead to a more accurate and robust
+recommendation model.<br />
+</p>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
