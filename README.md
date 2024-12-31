@@ -15,7 +15,6 @@ Citation: F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets:
 This project contains the following documents : 
 - movie_recommendation_system.R (The R script containing the code)
 - movie_recommendation_system.Rmd (The Markdown version of the R script, used to generate an HTML report)
-- movie_recommendation_system.html (The HTML report generated from the Markdown version)
 - movie_recommendation_system.pdf (The PDF version of the report)
 
 
